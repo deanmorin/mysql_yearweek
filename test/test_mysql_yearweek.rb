@@ -13,12 +13,14 @@ class MySQLYearweekTest < Test::Unit::TestCase
 
   def test_yearweek
     db = Mysql::new('localhost', 'root', '', 'test')
+
+    low_year = MySQLYearweek::MIN_ALLOWED_DATE.year
+    high_year = MySQLYearweek::MAX_TESTED_DATE.year
   
-    (2011..2100).each do |year|
+    (low_year..high_year).each do |year|
       (1..12).each do |month|
         (1..days_in_month(year, month)).each do |day|
-          (4..4).each do |mode|
-          #(0..7).each do |mode|
+          (0..7).each do |mode|
             sql = "SELECT yearweek('#{year}-#{month}-#{day}', #{mode})"
             official_yearweek = db.query(sql).to_a.flatten[0]
             date = Date.new(year, month, day)
@@ -27,6 +29,17 @@ class MySQLYearweekTest < Test::Unit::TestCase
           end
         end 
       end
+    end
+  end
+
+  def test_date_range
+    MySQLYearweek.yearweek(MySQLYearweek::MIN_ALLOWED_DATE.year, 1, 1)
+    MySQLYearweek.yearweek(MySQLYearweek::MAX_ALLOWED_DATE.year, 12, 31)
+    assert_raise ArgumentError do
+      MySQLYearweek.yearweek(MySQLYearweek::MIN_ALLOWED_DATE.year - 1, 12, 31)
+    end
+    assert_raise ArgumentError do
+      MySQLYearweek.yearweek(MySQLYearweek::MAX_ALLOWED_DATE.year + 1, 1, 1)
     end
   end
 
@@ -40,9 +53,14 @@ class MySQLYearweekTest < Test::Unit::TestCase
   end
 
   def test_type
-    MySQLYearweek.yearweek(Date.today, 4)
+    (0..7).each do |i|
+      MySQLYearweek.yearweek(Date.today, i)
+    end
     assert_raise ArgumentError do
-      MySQLYearweek.yearweek(Date.today, 0)
+      MySQLYearweek.yearweek(Date.today, -1)
+    end
+    assert_raise ArgumentError do
+      MySQLYearweek.yearweek(Date.today, 8)
     end
   end
 end

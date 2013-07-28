@@ -1,225 +1,46 @@
-# java_regex
+# mysql_yearweek
 
-A gem for converting Java-style regular expressions to Ruby ones.
+A gem for getting the exact same yearweek as returned by the MySQL function.
 
 ## Overview
 
-With Java's `String.match()` a regex has to match the entire string to be a match. In ruby, you have to explicitly use `\A` and `\z` if you want only matches for the whole string. 
-    
-The `JavaRegex` class automatically adds those characters to every Java string that it converts. Also, it will attempt to convert Java regex conventions to the Ruby equivalent where possible, and throw an exception where a feature does not exist in Ruby. It's still very much a work in progress.
+MySQL's `yearweek` function has eight different modes for determining the yearweek. This will get the same yearweek for each mode, with `4` being the default mode.
 
 ## Installation
 
-    $ gem install java_regex
+    $ gem install mysql_yearweek
 
 ## Example Usage
 
-    > require java_regex
+    > require mysql_yearweek
     => true
-    > jre = JavaRegex.new('.*some_regex_\p{Digit}')
-    => #<JavaRegex:0x007fea73075ea8 @regex=".*some_regex_\\p{Digit}">
-    puts jre.to_ruby()
-    \A.*some_regex_[[:digit:]]\z
-    => nil
-    > re = jre.to_ruby_regex()
-    => /\A.*some_regex_[[:digit:]]\z/
-    > 'some_regex_1'.scan(re)
-    => ["some_regex_1"]
+    > MySQLYearweek.yearweek(Date.new(2013, 07, 25))
+    => "201330"
+    > MySQLYearweek.yearweek(Date.new(2013, 07, 25), 2)
+    => "201329"
     
-## Supported Features
+## Limitations
 
-The regex feature differences between Java and Ruby were obtained from the comparison charts at [Regular-Expressions.info].
+This only works with `1584-01-01` and later. Before that are Julian calendar dragons.
 
-### Characters
-*   `\Q`...`\E` escapes a string of metacharacters
+## MySQL Yearweek Modes
+The following table from the [official MySQL docs] describes how each mode is expected to behave.
 
-    `Java Support` Java 6
-    
-    `Ruby Support` No
-    
-    `Result if Found` Throws an exception.
-    
-*    `\cA` through `\cZ` (control character)
-
-    `Java Support` Yes
-    
-    `Ruby Support` No
-    
-    `Result if Found` Throws an exception.
-
-### Character Classes of Character Sets [abc]
-
-*   Hyphen in `[\d-z]` is a literal
-
-    `Java Support` Yes
-    
-    `Ruby Support` No
-    
-    `Result if Found` Escapes the hyphen: `[\d-z]` -> `[\d\-z]`
-
-### Word Boundaries
-
-*   `\b` (at the beginning or end of a word)
-
-    `Java Support` Yes
-    
-    `Ruby Support` Ascii only
-    
-    `Result if Found` Throws an exception if followed by a non-ascii character.
-
-*   `\B` (NOT the beginning or end of a word)
-
-    `Java Support` Yes
-    
-    `Ruby Support` Ascii only
-    
-    `Result if Found` Throws an exception if followed by a non-ascii character.
-
-### Grouping and Backreferences
-
-*   Backreferences non-existent groups are an error
-
-    `Java Support` Yes
-    
-    `Ruby Support` No
-    
-    `Result if Found` Throws an exception.
-
-### Modifiers
-
-*   `(?s)` (dot matches newlines)
-
-    `Java Support` Yes
-    
-    `Ruby Support` `(?m)`
-    
-    `Result if Found` Throws an exception if a newline character is found.
-
-*   `(?m)` (`^` and `$` match at line breaks)
-
-    `Java Support` Yes
-    
-    `Ruby Support` Always on
-    
-    `Result if Found` Handling not implemented.
-
-### Atomic Grouping and Possessive Quantifiers
-
-*   `?+`, `*+`, `++` and `{m, n}+` (possessive quantifiers)
-
-    `Java Support` Yes
-    
-    `Ruby Support` No
-    
-    `Result if Found` Handling not implemented.
-
-### Lookaround
-
-*   `(?<=text)` (positive lookbehind)
-
-    `Java Support` Finite Length
-    
-    `Ruby Support` No
-    
-    `Result if Found` Handling not implemented.
-
-*   `(?<!text)` (negative lookbehind)
-
-    `Java Support` Finite Length
-    
-    `Ruby Support` No
-    
-    `Result if Found` Handling not implemented.
-
-### Unicode Characters
-
-*   `\u0000` through `\uFFFF` (Unicode character)
-
-    `Java Support` Yes
-    
-    `Ruby Support` No
-    
-    `Result if Found` Converted to 0x0000 format.
-
-### Unicode Properties, Scripts and Blocks
-
-*   `\pL` through `\pC` (Unicode properties)
-
-    `Java Support` Yes
-    
-    `Ruby Support` No
-    
-    `Result if Found` Handling not implemented.
-
-*   `\p{L}` through `\p{C}` (Unicode properties)
-
-    `Java Support` Yes
-    
-    `Ruby Support` No
-    
-    `Result if Found` Handling not implemented.
-
-*   `\p{Lu}` through `\p{Cn}` (Unicode property)
-
-    `Java Support` Yes
-    
-    `Ruby Support` No
-    
-    `Result if Found` Handling not implemented.
-
-*   `\p{IsL}` through `\p{IsC}` (Unicode properties)
-
-    `Java Support` Yes
-    
-    `Ruby Support` No
-    
-    `Result if Found` Handling not implemented.
-
-*   `\p{IsLu}` through `\p{IsCn}` (Unicode property)
-
-    `Java Support` Yes
-    
-    `Ruby Support` No
-    
-    `Result if Found` Handling not implemented.
-
-*   `\p{IsBasicLatin}` through `\p{InSpecials}` (Unicode block)
-
-    `Java Support` Yes
-    
-    `Ruby Support` No
-    
-    `Result if Found` Handling not implemented.
-
-*   Spaces, hyphens, and underscores allowed in all long names listed above (e.g. `BasicLatin` can be written as `Basic-Latin` or `Basic_Latin` or `Basic Latin`)
-
-    `Java Support` Yes
-    
-    `Ruby Support` No
-    
-    `Result if Found` Handling not implemented.
-
-*   `\P` (negated variants of all `\p` as listed above)
-
-    `Java Support` Yes
-    
-    `Ruby Support` No
-    
-    `Result if Found` Handling not implemented.
-
-### POSIX Bracket Expressions
-
-*   `\p{Alpha}` POSIX character class
-
-    `Java Support` Ascii
-    
-    `Ruby Support` No
-    
-    `Result if Found` Converted to `[:alpha:]` POSIX character class.
+<table>
+  <tr><th>Mode</th><th>First day of week</th><th>Range</th><th>Week 1 is the first week …</th></tr>
+  <tr><td>0</td><td>Sunday</td><td>0-53</td><td>with a Sunday in this year</td></tr>
+  <tr><td>1</td><td>Monday</td><td>0-53</td><td>with more than 3 days this year</td></tr>
+  <tr><td>2</td><td>Sunday</td><td>1-53</td><td>with a Sunday in this year</td></tr>
+  <tr><td>3</td><td>Monday</td><td>1-53</td><td>with more than 3 days this year</td></tr>
+  <tr><td>4</td><td>Sunday</td><td>0-53</td><td>with more than 3 days this year</td></tr>
+  <tr><td>5</td><td>Monday</td><td>0-53</td><td>with a Monday in this year</td></tr>
+  <tr><td>6</td><td>Sunday</td><td>1-53</td><td>with more than 3 days this year</td></tr>
+  <tr><td>7</td><td>Monday</td><td>1-53</td><td>with a Monday in this year</td></tr>
+</table>
 
 ## Copyright
 
 Copyright (c) 2013 Dean Morin. See [LICENSE] for details.
 
-[Regular-Expressions.info]: http://www.regular-expressions.info/refflavors.html
-[LICENSE]: https://github.com/deanmorin/java_regex/blob/master/LICENSE
+[official MySQL docs]: https://dev.mysql.com/doc/refman/5.0/en/date-and-time-functions.html#function_week
+[LICENSE]: https://github.com/deanmorin/mysql_yearweek/blob/master/LICENSE
