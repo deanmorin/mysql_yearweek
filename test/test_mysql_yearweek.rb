@@ -18,7 +18,7 @@ class MySQLYearweekTest < Test::Unit::TestCase
     high_year = MySQLYearweek::MAX_TESTED_DATE.year
   
     (low_year..high_year).each do |year|
-      (1..12).each do |month|
+      [1, 12].each do |month|
         (1..days_in_month(year, month)).each do |day|
           (0..7).each do |mode|
             sql = "SELECT yearweek('#{year}-#{month}-#{day}', #{mode})"
@@ -32,14 +32,13 @@ class MySQLYearweekTest < Test::Unit::TestCase
     end
   end
 
-  def test_date_range
-    MySQLYearweek.yearweek(MySQLYearweek::MIN_ALLOWED_DATE.year, 1, 1)
-    MySQLYearweek.yearweek(MySQLYearweek::MAX_ALLOWED_DATE.year, 12, 31)
+  def test_allowed_dates
+    date = Date.new(MySQLYearweek::MIN_ALLOWED_DATE.year, 1, 1)
+    MySQLYearweek.yearweek(date)
+
     assert_raise ArgumentError do
-      MySQLYearweek.yearweek(MySQLYearweek::MIN_ALLOWED_DATE.year - 1, 12, 31)
-    end
-    assert_raise ArgumentError do
-      MySQLYearweek.yearweek(MySQLYearweek::MAX_ALLOWED_DATE.year + 1, 1, 1)
+      date = Date.new(MySQLYearweek::MIN_ALLOWED_DATE.year - 1, 12, 31)
+      MySQLYearweek.yearweek(date)
     end
   end
 

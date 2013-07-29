@@ -4,7 +4,7 @@ require 'time'
 
 class MySQLYearweek
   MIN_ALLOWED_DATE = Date.new(1584, 1, 1).freeze
-  MAX_TESTED_DATE = Date.new(3000, 12, 31).freeze
+  MAX_TESTED_DATE = Date.new(4000, 12, 31).freeze
 
   def self.yearweek(date, mode=4)
     raise TypeError unless date.is_a?(Date)
