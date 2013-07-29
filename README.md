@@ -6,6 +6,8 @@ A gem for getting the exact same yearweek as returned by the MySQL function.
 
 MySQL's `yearweek` function has eight different modes for determining the yearweek. This will get the same yearweek for each mode, with `4` being the default mode.
 
+This gem was tested against MySQL 5.6.12.
+
 ## Installation
 
     $ gem install mysql_yearweek
