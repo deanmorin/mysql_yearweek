@@ -23,7 +23,7 @@ This gem was tested against MySQL 5.6.12.
     
 ## Limitations
 
-This only works with `1584-01-01` and later. Before that are Julian calendar dragons.
+This only works with `1584-01-01` and later. Before that be Julian calendar dragons.
 
 ## MySQL Yearweek Modes
 The following table from the [official MySQL docs] describes how each mode is expected to behave.
