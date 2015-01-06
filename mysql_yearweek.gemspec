@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'mysql_yearweek'
-  s.version     = '1.0.0'
+  s.version     = '1.0.1'
   s.date        = '2013-07-26'
   s.summary     = 'Returns yearweek values equivalent to the MySQL function'
   s.description = <<-eos
