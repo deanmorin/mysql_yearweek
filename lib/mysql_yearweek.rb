@@ -59,7 +59,7 @@ class MySQLYearweek
 
 
   def self.mode_one(date)
-    yearweek = "%04d%02d" % [date.cwyear, date.cweek]
+    "%04d%02d" % [date.cwyear, date.cweek]
   end
   private_class_method :mode_one
 
