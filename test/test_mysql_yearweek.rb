@@ -1,6 +1,6 @@
 # encoding=utf-8
+require 'date'
 require 'test/unit'
-require 'time'
 require 'mysql'
 require 'mysql_yearweek'
 
